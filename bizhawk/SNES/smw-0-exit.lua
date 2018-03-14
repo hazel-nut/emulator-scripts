@@ -20,12 +20,22 @@ while true do
 	-- shell_coords = {0xFA, 0x68, 0xA9, 0x1C, 0x92, 0x75, 0x60}
 	
 	-- dots video values
-	ss_ref = {0xA9, 0x1C, 0x92, 0x75, 0x4C, 0x46, 0x0}	
-	magic_number = 384 - 146 -- mario x for shell 3 (384); 0x92 = 146
+	ss_ref = {0xA9, 0x1C, 0x92, 0x75, 0x4C, 0x46, 0x0}
 	
 	-- left: shell 4, shell 1, shell 5 (needs offset)
 	-- right: shell 2, shell 3, shell 0
-	
+	left_offset = 384 - 146 -- mario x for shell 3 (384); 0x92 = 146
+	right_offset = left_offset - 36
+	mario_x_ref = {
+		0xA9 - right_offset,
+		0x1C - left_offset,
+		0x92 - right_offset,
+		0x75 - right_offset,
+		0x4C - left_offset,
+		0x46 - left_offset,
+		0x0
+	}
+
 	offset = 12
 	for i=1,7 do
 		txt_ss = "sprite slot " .. (i-1) .. ": "
@@ -40,8 +50,8 @@ while true do
 		
 		txt_mario_x = "mario: " .. mario_x
 		
-		mario_delta = mario_x - shell_coords[i] - magic_number
-		mario_color = (mario_delta == 0 or mario_delta == 36) and successcolor or failcolor
+		mario_delta = mario_x - mario_x_ref[i]
+		mario_color = mario_delta == 0 and successcolor or failcolor
 		gui.text(300, offset*i, "(mario: " .. mario_delta .. ")", mario_color)
 	end
 	
