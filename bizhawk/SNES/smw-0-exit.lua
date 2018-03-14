@@ -74,7 +74,7 @@ SPRITE_SLOT = {
 
 while true do
 	local mario_x = mainmemory.read_u16_le(MARIO_X_REGISTER) 
-	gui.text(0, offset*8, "mario: " .. mario_x, "white")
+	gui.text(0, LINE_HEIGHT * 8, "mario: " .. mario_x, "white")
 
     for i=0,6 do
         ss = SPRITE_SLOT[i]
@@ -84,13 +84,14 @@ while true do
         local mario_offset = ss.mario_direction == 0 and MARIO_LEFT_OFFSET or MARIO_RIGHT_OFFSET
         local mario_delta = mario_x - ss.correct_value - mario_offset
 
+        local display_height = LINE_HEIGHT * i
         local display_text = "[ss" .. i .. ", " .. ss.desc .. "] " .. ss_value
         if ss_delta == 0 then -- register is correctly set
-            gui.text(0, offset * i, display_text, SUCCESS_COLOR)
+            gui.text(0, display_height, display_text, SUCCESS_COLOR)
         else
             local nudge = mario_delta < 0 and (math.abs(mario_delta) .. " -->") or ("<-- " .. math.abs(mario_delta))
-            gui.text(0, offset * i, display_text .. " (" .. ss_delta .. ")", FAIL_COLOR)
-            gui.text(300, offset * i, nudge, FAIL_COLOR)
+            gui.text(0, display_height, display_text .. " (" .. ss_delta .. ")", FAIL_COLOR)
+            gui.text(300, display_height, nudge, FAIL_COLOR)
         end
 
     emu.frameadvance()
