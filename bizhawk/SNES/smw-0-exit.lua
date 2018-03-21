@@ -79,7 +79,7 @@ while true do
             gui.text(VALUE_COLUMN, display_height, display_value, SUCCESS_COLOR)
         else
             gui.text(VALUE_COLUMN, display_height, display_value .. "  (" .. ss_delta .. ")", FAIL_COLOR)
-            if mario_delta == 0 then -- mario is in the right spot
+            if mario_delta % 256 == 0 then -- mario is in the right spot
                 gui.text(MARIO_COLUMN, display_height, "  there!", SUCCESS_COLOR)
             else
                 local right_arrow_spaces = string.rep(" ", 4 - math.floor(math.log10(math.abs(mario_delta))))
