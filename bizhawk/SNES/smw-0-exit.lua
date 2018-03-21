@@ -10,7 +10,6 @@ MARIO_COLUMN = 325
 MARIO_X_REGISTER = 0x0094 -- x coord, absolute (0x007E is screen-relative)
 MARIO_FACING_RIGHT_OFFSET = 238 -- mario x for shell 3 (384); 0x92 = 146
 MARIO_FACING_LEFT_OFFSET = MARIO_FACING_RIGHT_OFFSET + 36
-MARIO_RIGHT_OFFSET = MARIO_LEFT_OFFSET + 36
 
 -- sprite slot constants using dots video reference values
 SPRITE_SLOTS = {
