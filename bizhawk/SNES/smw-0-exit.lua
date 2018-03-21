@@ -69,6 +69,9 @@ while true do
         local ss_delta = ss_value - ss.correct_value
         local mario_offset = ss.mario_direction == 0 and MARIO_FACING_LEFT_OFFSET or MARIO_FACING_RIGHT_OFFSET
         local mario_delta = mario_x - ss.correct_value - mario_offset
+        if i == 6 then -- p-switch doesn't need an offset
+            mario_delta = ss_delta
+        end
         
         local display_height = LINE_HEIGHT * (i+1)
         gui.text(DESC_COLUMN, display_height, i .. ": " .. ss.desc, "yellow")
