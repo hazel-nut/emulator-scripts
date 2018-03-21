@@ -8,8 +8,9 @@ VALUE_COLUMN = 175
 MARIO_COLUMN = 325
 
 MARIO_X_REGISTER = 0x0094 -- x coord, absolute (0x007E is screen-relative)
-MARIO_LEFT_OFFSET = 238 -- mario x for shell 3 (384); 0x92 = 146
-MARIO_RIGHT_OFFSET = MARIO_LEFT_OFFSET - 36
+MARIO_FACING_RIGHT_OFFSET = 238 -- mario x for shell 3 (384); 0x92 = 146
+MARIO_FACING_LEFT_OFFSET = MARIO_FACING_RIGHT_OFFSET + 36
+MARIO_RIGHT_OFFSET = MARIO_LEFT_OFFSET + 36
 
 -- sprite slot constants using dots video reference values
 SPRITE_SLOTS = {
@@ -67,7 +68,7 @@ while true do
         ss = SPRITE_SLOTS[i]
         local ss_value = mainmemory.read_u8(ss.register)
         local ss_delta = ss_value - ss.correct_value
-        local mario_offset = ss.mario_direction == 0 and MARIO_LEFT_OFFSET or MARIO_RIGHT_OFFSET
+        local mario_offset = ss.mario_direction == 0 and MARIO_FACING_LEFT_OFFSET or MARIO_FACING_RIGHT_OFFSET
         local mario_delta = mario_x - ss.correct_value - mario_offset
         
         local display_height = LINE_HEIGHT * (i+1)
