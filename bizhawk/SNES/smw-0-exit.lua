@@ -59,12 +59,12 @@ SPRITE_SLOTS = {
         ["register"] = 0x1805,
         ["correct_value_min"] = 0xD8, -- range: 0xd8 - 0xe4 (except 0xdf?)
         ["correct_value_max"] = 0xE4,
-        ["desc"] = "throw block top right"
+        ["desc"] = "top right"
     },
     [10] = {
         ["register"] = 0x1806,
         ["correct_value"] = 0x00,
-        ["desc"] = "throw block bottom left"
+        ["desc"] = "bottom left"
     }
 }
 
@@ -75,43 +75,47 @@ while true do
     gui.text(MARIO_COLUMN, 0, "<- mario ->", "white")
 
     for i=0,10 do
-        ss = SPRITE_SLOTS[i]
-
-        local display_height = LINE_HEIGHT * (i+1)
-        local display_value = "0x" .. string.format("%02X", ss_value)
-        gui.text(DESC_COLUMN, display_height, i .. ": " .. ss.desc, "yellow")
-        
-        local ss_value = mainmemory.read_u8(ss.register)
-
-        if i == 7 or i == 8 then
+		if i == 7 or i == 8 then
             local why_doesnt_lua_have_continues = 0
-        elseif i == 9 then -- case out stupid range of values for minor extended slot 9
-            local minor_slots_correct = ss_value >= ss.correct_value_min or ss_value <= ss.correct_value_max
-            gui.text(VALUE_COLUMN, display_height, display_value, minor_slots_correct and SUCCESS_COLOR or FAIL_COLOR)
-        else
-            local ss_delta = ss_value - ss.correct_value
-            local mario_delta = 0 -- minor sprite slots don't need mario delta at all
-            if i < 6 then -- shells need offset
-                local mario_offset = ss.mario_direction == 0 and MARIO_FACING_LEFT_OFFSET or MARIO_FACING_RIGHT_OFFSET
-                mario_delta = mario_x - ss.correct_value - mario_offset
-            elseif i == 6 then -- p-switch doesn't need an offset
-                mario_delta = ss_delta
-            end
-            
-            if ss_delta == 0 then -- register is correctly set
-                gui.text(VALUE_COLUMN, display_height, display_value, SUCCESS_COLOR)
-            else
-                gui.text(VALUE_COLUMN, display_height, display_value .. "  (" .. ss_delta .. ")", FAIL_COLOR)
-                if mario_delta % 256 == 0 then -- mario is in the right spot
-                    gui.text(MARIO_COLUMN, display_height, "  there!", SUCCESS_COLOR)
-                else
-                    local right_arrow_spaces = string.rep(" ", 4 - math.floor(math.log10(math.abs(mario_delta))))
-                    local go_right_string = "    " .. math.abs(mario_delta) .. right_arrow_spaces .. "->"
-                    local go_left_string = "<-  " .. math.abs(mario_delta)
-                    gui.text(MARIO_COLUMN, display_height, mario_delta < 0 and go_right_string or go_left_string, FAIL_COLOR)
-                end
-            end
-        end
+		else
+			local ss = SPRITE_SLOTS[i]
+			local ss_value = mainmemory.read_u8(ss.register)
+
+			local display_height = LINE_HEIGHT * (i+1)
+			local display_value = "0x" .. string.format("%02X", ss_value)
+			gui.text(DESC_COLUMN, display_height, i .. ": " .. ss.desc, "yellow")
+			
+			if i == 9 then -- case out stupid range of values for minor extended slot 9
+				if ss_value >= ss.correct_value_min and ss_value <= ss.correct_value_max then
+					gui.text(VALUE_COLUMN, display_height, display_value, SUCCESS_COLOR)
+				else
+					gui.text(VALUE_COLUMN, display_height, display_value, FAIL_COLOR)
+				end
+			else
+				local ss_delta = ss_value - ss.correct_value
+				local mario_delta = 0 -- minor sprite slots don't need mario delta at all
+				if i < 6 then -- shells need offset
+					local mario_offset = ss.mario_direction == 0 and MARIO_FACING_LEFT_OFFSET or MARIO_FACING_RIGHT_OFFSET
+					mario_delta = mario_x - ss.correct_value - mario_offset
+				elseif i == 6 then -- p-switch doesn't need an offset
+					mario_delta = ss_delta
+				end
+				
+				if ss_delta == 0 then -- register is correctly set
+					gui.text(VALUE_COLUMN, display_height, display_value, SUCCESS_COLOR)
+				else
+					gui.text(VALUE_COLUMN, display_height, display_value .. "  (" .. ss_delta .. ")", FAIL_COLOR)
+					if mario_delta % 256 == 0 then -- mario is in the right spot
+						gui.text(MARIO_COLUMN, display_height, "  there!", SUCCESS_COLOR)
+					else
+						local right_arrow_spaces = string.rep(" ", 4 - math.floor(math.log10(math.abs(mario_delta))))
+						local go_right_string = "    " .. math.abs(mario_delta) .. right_arrow_spaces .. "->"
+						local go_left_string = "<-  " .. math.abs(mario_delta)
+						gui.text(MARIO_COLUMN, display_height, mario_delta < 0 and go_right_string or go_left_string, FAIL_COLOR)
+					end
+				end
+			end
+		end
     end
 
     emu.frameadvance()
